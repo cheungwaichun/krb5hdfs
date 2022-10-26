@@ -1,0 +1,168 @@
+version: "2"
+
+services:
+  kerberos:
+    # networks:
+    #   default:
+    #     ipv4_address: 172.33.0.21
+    container_name: kerberos.example
+    hostname: kerberos.example.com
+    entrypoint: /start-kdc.sh
+    # stdin_open: true
+    # tty: true
+    privileged: true
+    build:
+      context: ./ubuntu
+      args:
+        - http_proxy
+        - https_proxy
+    ports:
+      - 88:88
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./start-kdc.sh:/start-kdc.sh
+      - server-keytab:/var/keytabs
+      - nn-shared:/var/nnshared
+      - ./ubuntu/ssh/:/home/hdfs/.ssh
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+  kerberos-2:
+    container_name: kerberos-2.example
+    hostname: kerberos-2.example.com
+    entrypoint: /start-kdc2.sh
+    # stdin_open: true
+    # tty: true
+    privileged: true
+    build:
+      context: ./ubuntu
+      args:
+        - http_proxy
+        - https_proxy
+    ports:
+      - 89:88
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./start-kdc2.sh:/start-kdc2.sh
+      - server-keytab:/var/keytabs
+      - nn-shared:/var/nnshared
+      - ./ubuntu/ssh/:/home/hdfs/.ssh
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+  nn1:
+    ports:
+      - 9000:9000
+      - 14000:14000
+      - 50470:50470
+      - 1234:1234
+    container_name: nn1.example
+    hostname: nn1.example.com
+    user: hdfs
+    entrypoint: /start-namenode1.sh
+    build:
+      context: ./ubuntu
+      args:
+        - http_proxy
+        - https_proxy
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - server-keytab:/var/keytabs
+      - nn-shared:/var/nnshared
+      - /hadoop
+      - ./start-namenode1.sh:/start-namenode1.sh
+      - /home/scutech/Downloads/dbackup-develop:/dbackupinstall
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    cap_add:
+      - SYS_PTRACE
+
+  nn2:
+    ports:
+      - 9001:9000
+      - 14001:14000
+      - 50471:50470
+      - 1235:1234
+    container_name: nn2.example
+    hostname: nn2.example.com
+    user: hdfs
+    entrypoint: /start-namenode2.sh
+    build:
+      context: ./ubuntu
+      args:
+        - http_proxy
+        - https_proxy
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - server-keytab:/var/keytabs
+      - nn-shared:/var/nnshared
+      - /hadoop
+      - ./start-namenode2.sh:/start-namenode2.sh
+      - /home/scutech/Downloads/dbackup-develop:/dbackupinstall
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    cap_add:
+      - SYS_PTRACE
+
+  dn1:
+    # networks:
+    #   default:
+    #     ipv4_address: 172.33.0.23
+    container_name: dn1.example
+    hostname: dn1.example.com
+    user: hdfs
+    entrypoint: /start-datanode.sh
+    build:
+      context: ./ubuntu
+      args:
+        - http_proxy
+        - https_proxy
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./start-datanode.sh:/start-datanode.sh
+      - server-keytab:/var/keytabs
+      - nn-shared:/var/nnshared
+      - /home/scutech/Downloads/dbackup-develop:/dbackupinstall
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+  data-populator:
+    # networks:
+    #   default:
+    #     ipv4_address: 172.33.0.24
+    container_name: data-populator.example
+    hostname: data-populator.example.com
+    user: hdfs
+    entrypoint: /populate-data.sh
+    build:
+      context: ./ubuntu
+      args:
+        - http_proxy
+        - https_proxy
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./populate-data.sh:/populate-data.sh
+      - server-keytab:/var/keytabs
+      - nn-shared:/var/nnshared
+      - /home/scutech/Downloads/dbackup-develop:/dbackupinstall
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+networks:
+  default:
+    external:
+      name: com
+# networks:
+#   default:
+#    external:
+#      name: serv-net
+
+volumes:
+  server-keytab:
+  nn-shared:
