@@ -14,7 +14,7 @@ iptables -t nat -A PREROUTING -p udp --dport 8888 -j REDIRECT --to-ports 88
 
 # 创建数据库
 # /usr/sbin/kdb5_util -P changeme create -s
-/usr/sbin/kdb5_util create -s
+/usr/sbin/kdb5_util -P 123456 create -s
 
 ## password only user
 # 生成随机key的principal 
@@ -25,7 +25,7 @@ iptables -t nat -A PREROUTING -p udp --dport 8888 -j REDIRECT --to-ports 88
 /usr/sbin/kadmin.local -q "ktadd -k /var/keytabs/server.keytab -norandkey HTTP/server.example.com"
 
 /usr/sbin/kadmin.local -q "addprinc -pw 123456 -kvno 1 ubuntu/admin"
-/usr/sbin/kadmin.local -q "ktadd -k /var/keytabs/server.keytab -norandkey ubuntu/admin"
+# /usr/sbin/kadmin.local -q "ktadd -k /var/keytabs/server.keytab -norandkey ubuntu/admin"
 
 /usr/sbin/kadmin.local -q "addprinc -pw 123456 -kvno 1 hdfs/nn1.example.com"
 /usr/sbin/kadmin.local -q "addprinc -pw 123456 -kvno 1 HTTP/nn1.example.com"
@@ -105,7 +105,10 @@ chown hdfs /var/keytabs/truststore.jks
 # echo 1 > /proc/sys/net/ipv4/ip_forward 
 # iptables -t nat -A PREROUTING -p udp --dport 8888 -j REDIRECT --to-ports 88
 
-echo "*/admin@EXAMPLE.COM    *" > /etc/krb5kdc/kadm5.acl
+# echo "*/admin@EXAMPLE.COM    *" > /etc/krb5kdc/kadm5.acl
+echo "*/admin@EXAMPLE.COM    xe" >> /etc/krb5kdc/kadm5.acl
+
+
 
 /usr/sbin/kadmin.local -q "addprinc  -pw 123456 -kvno 1 host/kerberos.example.com"
 /usr/sbin/kadmin.local -q "addprinc  -pw 123456 -kvno 1 host/kerberos-2.example.com"
@@ -116,6 +119,7 @@ echo "*/admin@EXAMPLE.COM    *" > /etc/krb5kdc/kadm5.acl
 echo "host/kerberos.example.com@EXAMPLE.COM" > /etc/krb5kdc/kpropd.acl
 echo "host/kerberos-2.example.com@EXAMPLE.COM" >> /etc/krb5kdc/kpropd.acl
 
-
+# /usr/sbin/kadmind
+service krb5-admin-server start
 
 krb5kdc -n

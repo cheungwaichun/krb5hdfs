@@ -7,6 +7,7 @@ RUN apt-get update
 RUN apt-get install -y krb5-kdc krb5-admin-server krb5-user krb5-config
 RUN apt-get install -y default-jdk jsvc libcommons-daemon-java
 RUN apt-get install -y telnet telnetd vim ssh curl net-tools iputils-ping netcat iptables
+RUN apt-get install -y krb5-kpropd
 
 RUN sed -i -e 's/#//' -e 's/default_ccache_name/# default_ccache_name/' /etc/krb5.conf
 # 替换kerberos 默认tcp端口为8888
