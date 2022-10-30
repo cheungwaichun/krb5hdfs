@@ -42,6 +42,8 @@ services:
         - https_proxy
     ports:
       - 89:88
+#    depends_on:
+#      - kerberos
     environment:
       - TZ=Asia/Shanghai
     volumes:
@@ -67,6 +69,9 @@ services:
       args:
         - http_proxy
         - https_proxy
+#    depends_on:
+#      - kerberos
+#      - kerberos-2
     environment:
       - TZ=Asia/Shanghai
     volumes:
@@ -95,6 +100,9 @@ services:
       args:
         - http_proxy
         - https_proxy
+#    depends_on:
+#      - kerberos
+#      - kerberos-2
     environment:
       - TZ=Asia/Shanghai
     volumes:
@@ -121,6 +129,9 @@ services:
       args:
         - http_proxy
         - https_proxy
+#    depends_on:
+#      - kerberos
+#      - kerberos-2
     environment:
       - TZ=Asia/Shanghai
     volumes:
@@ -144,6 +155,8 @@ services:
       args:
         - http_proxy
         - https_proxy
+#    depends_on:
+#      - nn1
     environment:
       - TZ=Asia/Shanghai
     volumes:

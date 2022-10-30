@@ -18,14 +18,11 @@ iptables -t nat -A PREROUTING -p udp --dport 8888 -j REDIRECT --to-ports 88
 
 ## password only user
 # 生成随机key的principal 
-/usr/sbin/kadmin.local -q "addprinc  -pw 123456 -kvno 1 ifilonenko"
-/usr/sbin/kadmin.local -q "ktadd -k /var/keytabs/ifilonenko.keytab ifilonenko"
-
 /usr/sbin/kadmin.local -q "addprinc -pw 123456 -kvno 1 HTTP/server.example.com"
 /usr/sbin/kadmin.local -q "ktadd -k /var/keytabs/server.keytab -norandkey HTTP/server.example.com"
 
 /usr/sbin/kadmin.local -q "addprinc -pw 123456 -kvno 1 ubuntu/admin"
-# /usr/sbin/kadmin.local -q "ktadd -k /var/keytabs/server.keytab -norandkey ubuntu/admin"
+/usr/sbin/kadmin.local -q "ktadd -k /var/keytabs/admin.keytab -norandkey ubuntu/admin"
 
 /usr/sbin/kadmin.local -q "addprinc -pw 123456 -kvno 1 hdfs/nn1.example.com"
 /usr/sbin/kadmin.local -q "addprinc -pw 123456 -kvno 1 HTTP/nn1.example.com"
@@ -122,4 +119,24 @@ echo "host/kerberos-2.example.com@EXAMPLE.COM" >> /etc/krb5kdc/kpropd.acl
 # /usr/sbin/kadmind
 service krb5-admin-server start
 
-krb5kdc -n
+krb5kdc -n &
+
+# until kdb5_util dump /var/lib/krb5kdc/dumpfile; do sleep 5; done
+# until kprop -f /var/lib/krb5kdc/dumpfile -s /var/keytabs/host.keytab kerberos-2.example.com; \
+#       do sleep 5; done
+
+# echo "* * * * * echo \"hello\" >> /cron.txt " >> /var/spool/cron/crontabs/root
+#echo "* * * * * root echo \"hello\" >> /cron.txt " >> /etc/crontab
+echo "* * * * * root /usr/sbin/kdb5_util dump /var/lib/krb5kdc/dumpfile && \
+     /usr/sbin/kprop -r EXAMPLE.COM -f /var/lib/krb5kdc/dumpfile -s /var/keytabs/host.keytab \
+     kerberos-2.example.com" >> /etc/crontab
+service cron start
+# crontab /var/spool/cron/crontabs/root
+
+wait
+
+
+
+
+
+

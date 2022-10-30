@@ -16,8 +16,7 @@ iptables -t nat -A PREROUTING -p udp --dport 8888 -j REDIRECT --to-ports 88
 
 
 
-echo "host/kerberos.example.com@EXAMPLE.COM" > /etc/krb5kdc/kpropd.acl
-echo "host/kerberos-2.example.com@EXAMPLE.COM" >> /etc/krb5kdc/kpropd.acl
+echo "*/admin@EXAMPLE.COM    xe" >> /etc/krb5kdc/kadm5.acl
 
 until \
       kadmin -p ubuntu/admin -w 123456 -q \
@@ -28,7 +27,16 @@ until \
 echo "host/kerberos.example.com@EXAMPLE.COM" > /etc/krb5kdc/kpropd.acl
 echo "host/kerberos-2.example.com@EXAMPLE.COM" >> /etc/krb5kdc/kpropd.acl
 
+# kpropd 默认到 /etc/krb5.keytab 寻找 host 的 keytab 信息
+cp /var/keytabs/host.keytab /etc/krb5.keytab
+
 
 service krb5-kpropd start
+krb5kdc -n 
 
-krb5kdc -n
+
+
+
+
+
+

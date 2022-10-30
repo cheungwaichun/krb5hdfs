@@ -11,7 +11,9 @@ kdestroy
 hdfs namenode -format
 hdfs namenode -initializeSharedEdits -force
 
-# until kinit -V -kt /var/keytabs/hdfs.keytab hdfs/nn1.example.com; do sleep 2; done
-# until hdfs haadmin -transitionToActive nn1; do sleep 2; done
+hdfs namenode &
 
-hdfs namenode
+until kinit -V -kt /var/keytabs/hdfs.keytab hdfs/nn1.example.com; do sleep 2; done
+until hdfs haadmin -transitionToActive nn1; do sleep 2; done
+
+wait

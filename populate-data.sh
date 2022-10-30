@@ -12,12 +12,12 @@ until (echo > /dev/tcp/nn1.example.com/9000) >/dev/null 2>&1; do sleep 2; done
 hdfs dfsadmin -safemode wait
 
 
-hdfs dfs -mkdir -p /user/ifilonenko/
-hdfs dfs -copyFromLocal /people.json /user/ifilonenko
-hdfs dfs -copyFromLocal /people.txt /user/ifilonenko
+hdfs dfs -mkdir -p /user/hdfs/
+hdfs dfs -copyFromLocal /people.json /user/hdfs
+hdfs dfs -copyFromLocal /people.txt /user/hdfs
 
-hdfs dfs -chmod -R 755 /user/ifilonenko
-hdfs dfs -chown -R ifilonenko /user/ifilonenko
+hdfs dfs -chmod -R 755 /user/hdfs
+hdfs dfs -chown -R hdfs /user/hdfs
 
 
-sleep 60
+sleep 30
